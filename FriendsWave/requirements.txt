@@ -13,13 +13,7 @@ idna==2.6
 importlib-metadata==2.1.2
 importlib-resources==3.3.1
 ipaddress==1.0.17
-keyring==10.6.0d 2
-Changes from all commits 
-File filter 
-Conversations 
-Jump to 
- 
-￼ 89  FriendsWave/social/models.py 
+keyring==10.6.0d
 keyrings.alt==3.0
 lockfile==0.12.2
 Markdown==3.1.1
