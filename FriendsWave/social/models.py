@@ -1,90 +1,76 @@
-from functools import _Descriptor
-from django.db import models
-from django.db.models.base import Model
-from django.db.models.fields.related import OneToOneField
+from django.db import models, utils
+from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from topicModule.models import Topic
 
-class Profil(models.Models):
-    pseudo = models.CharField(max_length=100)
-    image = models.ImageField()
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    friends = models.ManyToManyField('self', through='Friend')
-    topics = models.ManyToManyField('Topic', through='UserTopic')
-    etat = models.BooleanField(default=False)
 
-class Friend(models.Model):
-    follower = models.ForeignKey(Profil, OneToOneField = models.CASCADE)
-    followed = models.ForeignKey(Profil, OneToOneField = models.CASCADE)
-    status = models.BooleanField()
+"""
+  model user extend default user django
+"""
+class User(AbstractUser):
+    GENRE = (
+        ('M', 'Masculin'),
+        ('F', 'Feminin')
+    )
 
-class Topic(models.Model):
-    subject = models.TextField(max_length=100)
-    description = models.TextField(max_length=100)
-    creator = models.ForeignKey(Profil, on_delete=models.SET_NULL)
-
-class UserTopic(models.Model):
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    choice_date = models.DateField()
-    raison = models.TextField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True)
-    
-
-class Group(models.Model):
-    designation = models.TextField(max_length=100)
-    _description = models.TextField(max_length=100)
-    type = models.BooleanField()
-    created_at = models.DateField() 
-    members = models.ManyToManyField(Profil, through='Member')
-    private_key = models.TextField(max_length=100, null=True)
-
-class Invitation(models.Model):
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    sujbject = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    created_at = models.DateField()
-    etat = models.BooleanField(default=False)
-    
-class Member(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=False)
-    is_owner = models.BooleanField(default=False)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True)
-
-class Content(models.Model):
-    Profil = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    title = models.TextField()
-    content = models.TextField()
+    first_name = models.CharField(max_length=100)
+    last_npassame = models.CharField(max_length=100)
+    birth_date = models.DateField(null=True, blank=True)
+    genre = models.CharField(max_length=1, choices=GENRE)
+    phone_number = models.CharField(max_length=20)
+    address = models.CharField(max_length=30, blank=True)
+    user_name = models.CharField(max_length=20)
+    password = models.CharField(max_length=20)
+    created_at = models.DateTimeField(default=timezone.now, editable=False) 
+    update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        abstract = True
+        ordering = ['created_at', 'genre']
 
-class Post(Content):
-    pass
-
-class Comment(Content):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-class Like(models.Model):
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    Content = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    created_at = models.DateField()
-
-class share(models.Model):
-    sender = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    recipient = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-class Notification(models.Model):
-    sender = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    recipient = models.ForeignKey(Profil, on_delete=models.CASCADE)
-    created_at = models.DateField()
-    title = models.TextField(max_length=50)
-    message = models.TextField(max_length=100)
-    
+    def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)
 
 
+""" 
+model Profil 
+"""
+class Profil(models.Models):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="belong")
+    follow = models.ManyToManyField('self', through='Friend', related_name="have")
+    topics_of_interest = models.ManyToManyField(Topic, through='UserTopic')
+    pseudo = models.CharField(max_length=100)
+    avatar = models.ImageField(upload_to="static", null=True, blank=True)
+    email = models.EmailField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False) 
+    update_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = "Profil"
+        verbose_plural_name = "Profils"
+
+    def __str__(self):
+        return self.pseudo
+
+
+
+""" 
+model Friend 
+"""
+class Friend(models.Model):
+    STATUS = (
+        ('A', 'ACCEPT'),
+        ('D', 'DENIE')
+    )
+
+    follower = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="friends")
+    followed = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="friend")
+    status = models.CharField(max_length=1, choices=STATUS)
+
+    class Meta:
+        verbose_name = "friend"
+        verbose_plural_name = "friends"
+
+    def __str__(self):
+        return self.STATUS
