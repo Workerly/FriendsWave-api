@@ -14,9 +14,7 @@ class User(AbstractUser):
     sex = models.CharField(max_length=1, choices=GENRES)
     address = models.CharField(max_length=30, blank=True)
     user_name = models.CharField(max_length=20)  
-    phone = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True) 
-    update_at = models.DateTimeField(auto_now=True)
+    phone = models.CharField(max_length=20)  
     
     def __str__(self):
         return "{} {}".format(self.first_name, self.last_name)
