@@ -4,8 +4,8 @@ from django.utils import tree
 
 class User(AbstractUser):
     GENRES = (
-        ('M', 'Masculin'),
-        ('F', 'Feminin')
+        ('F', 'Feminin'),
+        ('M', 'Masculin')
     )
 
     birth_date = models.DateField()
