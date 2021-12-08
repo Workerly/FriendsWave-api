@@ -16,7 +16,7 @@ class User(AbstractUser):
 class Profil(models.Model):
     pseudo = models.CharField(max_length=100) #pseudo of profile
     profil_image = models.ImageField() #image of profile
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profils') #profile user
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='profils') #profile user
     friends = models.ManyToManyField('self', through='Friend', related_name="have") #profile friends
     topics = models.ManyToManyField('Topic', through='ProfilTopic', related_name='followers')
     email = models.EmailField()
