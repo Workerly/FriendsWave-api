@@ -1,14 +1,33 @@
-from django.db import models
-from django.db.models.base import Model
-from django.db.models.fields import related
-from django.db.models.fields.related import OneToOneField, RelatedField
+from django.db import models 
+from django.contrib.auth.models import AbstractUser
+from django.utils import tree
 
+class User(AbstractUser):
+    GENRES = (
+        ('M', 'Masculin'),
+        ('F', 'Feminin')
+    )
+
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birth_date = models.DateField(null=True, blank=True)
+    genre = models.CharField(max_length=1, choices=GENRES)
+    phone_number = models.CharField(max_length=20)
+    address = models.CharField(max_length=30, blank=True)
+    user_name = models.CharField(max_length=20)
+    email = models.EmailField(max_length=100)
+    password = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True) 
+    update_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return "{} {}".format(self.first_name, self.last_name)
 
 class Profil(models.Models):
     pseudo = models.CharField(max_length=100) #pseudo of profile
     profil_image = models.ImageField() #image of profile
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='profils') #profile user
-    friends = models.ManyToManyField('self', through='Friend', related_name="freinds_set") #profile friends
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profils') #profile user
+    friends = models.ManyToManyField('self', through='Friend', related_name="have") #profile friends
     topics = models.ManyToManyField('Topic', through='UserTopic', related_name='followers')
     email = models.EmailField()
     is_active = models.BooleanField(default=False) #allows you to know if the profile is in use
@@ -21,7 +40,10 @@ class Friend(models.Model):
 class Topic(models.Model):
     subject = models.TextField(max_length=100) #text describing the theme to which the topic relates
     description = models.TextField(max_length=100) #topic description
-    creator = models.ForeignKey(Profil, on_delete=models.SET_NULL, related_name="topics") #profile having created the topic
+    creator = models.ForeignKey(Profil, on_delete=models.SET_NULL, related_name="createTopics") #profile having created the topic
+    
+    def __str__(self):
+        return self.title
 
 class ProfilTopic(models.Model):
     profil = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="profilTopics")
@@ -58,15 +80,19 @@ class Content(models.Model):
     profil = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="%(class)ss_create") #designates the profile having created the content
     title = models.TextField(max_length=255) #designates the title of the content
     content = models.TextField(max_length=255)#represents the content of the content
+    media = models.FileField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)
+    created_at = models.DateField(auto_now_add=True) #date of creation of the content
 
     class Meta:
         abstract = True #allows to make the class abstract
+        ordering = ['created_at']
+
 
 class Post(Content):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="posts") #designates the topic concerned by the content
     
 class Comment(Content):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
+    content = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
     comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
 
 class Like(models.Model):
