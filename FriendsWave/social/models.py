@@ -32,11 +32,14 @@ class Profil(models.Models):
     email = models.EmailField()
     is_active = models.BooleanField(default=False) #allows you to know if the profile is in use
 
+    def __str__(self):
+        return "{}".format(self.pseudo)
+
 class Friend(models.Model):
     follower = models.ForeignKey(Profil, on_delete = models.CASCADE, related_name="followers") #following profile
     followed = models.ForeignKey(Profil, on_delete = models.CASCADE, related_name="followeds")#profile that is followed
     status = models.BooleanField() #determine if the profile is blod
-
+    
 class Topic(models.Model):
     subject = models.TextField(max_length=100) #text describing the theme to which the topic relates
     description = models.TextField(max_length=100) #topic description
@@ -92,8 +95,9 @@ class Post(Content):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="posts") #designates the topic concerned by the content
     
 class Comment(Content):
-    content = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
-    comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
+    content = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #null if the comment concerns a comment
+    comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='comments', null=True) #null if the comment concerns a post
+    content = models.TextField(max_length=255)
 
 class Like(models.Model):
     profil = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="likes") #profile having liker
