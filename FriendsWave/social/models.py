@@ -10,7 +10,7 @@ class User(AbstractUser):
 
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.DateField()
     sex = models.CharField(max_length=1, choices=GENRES)
     address = models.CharField(max_length=30, blank=True)
     user_name = models.CharField(max_length=20)  
