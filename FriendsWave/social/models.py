@@ -13,9 +13,6 @@ class User(AbstractUser):
     address = models.CharField(max_length=30, blank=True) 
     phone = models.CharField(max_length=20)  
     
-    def __str__(self):
-        return "{} {}".format(self.first_name, self.last_name)
-
 class Profil(models.Models):
     pseudo = models.CharField(max_length=100) #pseudo of profile
     profil_image = models.ImageField() #image of profile
