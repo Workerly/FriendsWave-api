@@ -66,7 +66,7 @@ class Post(Content):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="posts") #designates the topic concerned by the content
     
 class Comment(Content):
-    content = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
     comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='comments', null=True) #represents the content of the comment
 
 class Like(models.Model):
