@@ -56,12 +56,12 @@ class ProfilTopic(models.Model):
     end_date = models.DateField(null=True) #topic monitoring stop date
     last_opened = models.DateField()
 
-class Group(models.Model):
+class Group(models.Model): 
     nom = models.TextField(max_length=100) #group title
     description = models.TextField(max_length=100) #textual description of the reason for the creation of the group
     is_public = models.BooleanField() #allows you to know if the group is private or public
     created_at = models.DateField(auto_now_add=True) #date of creation of the group
-    members = models.ManyToManyField(Profil, through='Member',related_name="group_set") #list of group members
+    members = models.ManyToManyField(Profil, through='Member') #list of group members
     private_key = models.TextField(max_length=150, null=True)#private key to the group
 
 class Invitation(models.Model):
