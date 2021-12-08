@@ -13,12 +13,12 @@ class User(AbstractUser):
     address = models.CharField(max_length=30, blank=True) 
     phone = models.CharField(max_length=20)  
     
-class Profil(models.Models):
+class Profil(models.Model):
     pseudo = models.CharField(max_length=100) #pseudo of profile
     profil_image = models.ImageField() #image of profile
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profils') #profile user
     friends = models.ManyToManyField('self', through='Friend', related_name="have") #profile friends
-    topics = models.ManyToManyField('Topic', through='UserTopic', related_name='followers')
+    topics = models.ManyToManyField('Topic', through='ProfilTopic', related_name='followers')
     email = models.EmailField()
     is_active = models.BooleanField(default=False) #allows you to know if the profile is in use
 
@@ -33,7 +33,7 @@ class Friend(models.Model):
 class Topic(models.Model):
     subject = models.TextField(max_length=100) #text describing the theme to which the topic relates
     description = models.TextField(max_length=100) #topic description
-    creator = models.ForeignKey(Profil, on_delete=models.SET_NULL, related_name="createTopics") #profile having created the topic
+    creator = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name="createTopics") #profile having created the topic
     
     def __str__(self):
         return self.title
