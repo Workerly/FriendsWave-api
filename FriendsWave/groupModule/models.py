@@ -1,12 +1,19 @@
 from django.db import models
+from django_extensions.db.models import TimeStampedModel
 
 from social.models import Profil
-from social.utils import Datation
 
-# Create your models here.
+import uuid
+
+class Datation(TimeStampedModel):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    deleted = models.BooleanField(default=False)
+    h_objects = models.Manager()
 
 
-class Group(Datation):
+
+class Community(Datation):
     """ 
     model Group 
     """
@@ -39,7 +46,7 @@ class Member(Datation):
     """ 
     model Member 
     """
-    group = models.ForeignKey(Group, on_delete=models.PROTECT, 
+    group = models.ForeignKey(Community, on_delete=models.PROTECT, 
         related_name='groupModule_member_related', 
         related_query_name='groupModule_members')
     profil = models.ForeignKey(Profil, on_delete=models.PROTECT, 
@@ -49,6 +56,6 @@ class Member(Datation):
     is_owner = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['create', 'is_admin', 'is_owner']
+        ordering = ['created', 'is_admin', 'is_owner']
         verbose_name = 'Member'
         verbose_name_plural = 'Members'

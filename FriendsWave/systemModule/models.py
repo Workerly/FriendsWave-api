@@ -1,9 +1,16 @@
 from django.db import models
+from django_extensions.db.models import TimeStampedModel
 
 from social.models import Profil
-from social.utils import Datation
 
-# Create your models here.
+import uuid
+
+class Datation(TimeStampedModel):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    deleted = models.BooleanField(default=False)
+    h_objects = models.Manager()
+
 
 
 class Notification(Datation):

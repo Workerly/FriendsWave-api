@@ -1,10 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django_extensions.db.models import TimeStampedModel
 
 from topicModule.models import Topic
-from social.utils import Datation
 
 from rest_framework_simplejwt.tokens import RefreshToken
+
+import uuid
+
+class Datation(TimeStampedModel):
+    """
+        This class content a timestamp reprensenting when the object was created and was last updated.
+    """
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
+    deleted = models.BooleanField(default=False)
+    h_objects = models.Manager()
 
 
 
@@ -33,7 +44,7 @@ class User(AbstractUser, Datation):
     is_verified = models.BooleanField(default=False)     # When a user has just created an account, he receives a confirmation email.
 
     class Meta:
-        ordering = ['created_at', 'genre']
+        ordering = ['created', 'genre']
         verbose_name = "user"
         verbose_name_plural = "users"
 
@@ -66,21 +77,21 @@ class Profil(Datation):
         ('I', 'Inactive')
     )
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT, 
+    usedBy = models.ForeignKey(User, on_delete=models.PROTECT, 
         related_name='social_profil_related', 
-        related_query_name='social_profils')  # 
+        related_query_name='social_profils')  # Each profil belong to user
     follow = models.ManyToManyField('self', through='social.Friend', 
         related_name = 'social_profil_related', 
-        related_query_name='social_profils')
+        related_query_name='social_profils')   # Each profil can follow one or more other profil
     topics_of_interest = models.ManyToManyField(Topic, through='topicModule.ProfilTopic', 
         related_name='topicModule_profil_related', 
-        related_query_name='topicModule_profils')
+        related_query_name='topicModule_profils')  # Each profil can have a topic that him interest
     avatar = models.ImageField(upload_to='static/profile/%Y/%m/%d/', null=True, blank=True)  # Each profil can represent by his image
     pseudo = models.CharField(max_length=100, null=False)  # Each profile can represent by the pseudo
     state_profil = models.CharField(max_length=1, choices=STATE_PROFIL, default='A')  # Represent the state of profile 
 
     class Meta:
-        ordering = ['created_at', 'is_active']
+        ordering = ['created']
         verbose_name = "Profil"
         verbose_name_plural = "Profils"
 
@@ -96,10 +107,10 @@ class Friend(Datation):
     )
 
     follower = models.ForeignKey(Profil, on_delete=models.PROTECT, 
-        related_name='social_friend_related', related_query_name='social_friends')
+        related_name='social_friend_related', related_query_name='social_friends') # This field content the profil follower
     followed = models.ForeignKey(Profil, on_delete=models.PROTECT, 
-        related_name='social_friend', related_query_name='socials_friends')
-    status = models.CharField(max_length=1, choices=STATUS)
+        related_name='social_friend', related_query_name='socials_friends') # This field content the follower of a profil
+    status = models.CharField(max_length=1, choices=STATUS)   # Each friend relation can be accepted or refused
 
     class Meta:
         verbose_name = "friend"
