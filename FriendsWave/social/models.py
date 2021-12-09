@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from topicModule.models import Topic
-from FriendsWave.utils import Datation
+from social.utils import Datation
 
 from rest_framework_simplejwt.tokens import RefreshToken
 

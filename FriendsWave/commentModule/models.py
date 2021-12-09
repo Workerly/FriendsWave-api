@@ -2,7 +2,7 @@ from django.db import models
 
 from social.models import Profil
 from postModule.models import Post
-from FriendsWave.utils import Datation
+from social.utils import Datation
 
 # Create your models here.
 

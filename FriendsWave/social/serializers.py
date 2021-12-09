@@ -1,11 +1,15 @@
 from rest_framework import serializers
+
 from .models import Profil, Friend, User
 from topicModule.models import Topic
+
 from django.contrib import auth
-import datetime
-from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.exceptions import AuthenticationFailed
+
+
+from drf_writable_nested.serializers import WritableNestedModelSerializer
+import datetime
 
 
 """

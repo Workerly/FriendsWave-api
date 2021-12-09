@@ -1,9 +1,6 @@
 from django.db import models
 
-from FriendsWave.utils import Datation
-# from social.models import Profil
-
-
+from social.utils import Datation
 
 class Topic(Datation):
     """ 

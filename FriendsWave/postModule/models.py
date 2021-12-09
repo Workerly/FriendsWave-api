@@ -1,9 +1,7 @@
 from django.db import models
 
 from social.models import Profil, Topic
-from FriendsWave.utils import Datation
-
-from django.utils import timezone
+from social.utils import Datation
 
 # Create your models here.
 

@@ -1,7 +1,7 @@
 from django.db import models
 
 from social.models import Profil
-from FriendsWave.utils import Datation
+from social.utils import Datation
 
 # Create your models here.
 
