@@ -7,9 +7,8 @@ import uuid
 
 
 class DeletableManager(models.manager):
-    
-    def get_queryset(self):
-        return super().get_queryset().order_by('created').filter(deleted=False)
+    pass
+
 
 class Datation(TimeStampedModel):
     id = models.UUIDField(
