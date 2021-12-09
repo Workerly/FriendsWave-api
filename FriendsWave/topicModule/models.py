@@ -1,21 +1,21 @@
 from django.db import models
+
+from FriendsWave.utils import Datation
 # from social.models import Profil
-from django.utils import timezone
 
-# Create your models here. 
 
-""" 
-model Topic 
-"""
-class Topic(models.Model):
-    profil = models.ForeignKey('social.Profil', on_delete=models.CASCADE, related_name='social_topic_related', related_query_name='social_topics')
+
+class Topic(Datation):
+    """ 
+    model Topic 
+    """
+    profil = models.ForeignKey('social.Profil', on_delete=models.PROTECT, 
+        related_name='social_topic_related', related_query_name='social_topics')
     title = models.TextField(max_length=100)
     description = models.TextField(max_length=100)
-    created_at = models.DateTimeField(default=timezone.now, editable=False) 
-    update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['created_at', 'title']
+        ordering = ['created', 'title']
         verbose_name = "topic"
         verbose_name_plural = "topics"
 
@@ -24,13 +24,14 @@ class Topic(models.Model):
 
 
 
-""" 
-model User_Topic 
-"""
-class UserTopic(models.Model):
-    suscribers = models.ForeignKey('social.Profil', on_delete=models.CASCADE, related_name='social_usertopic_related', related_query_name='social_usertopics')
-    topics = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='topicModule_usertopic_related', related_query_name='topicModule_usertopics')
-    raison = models.TextField(max_length=500)
+
+class ProfilTopic(Datation):
+    """ 
+    model User_Topic 
+    """
+    suscriber = models.ForeignKey('social.Profil', on_delete=models.PROTECT, 
+        related_name='social_usertopic_related', related_query_name='social_usertopics')
+    topics = models.ForeignKey(Topic, on_delete=models.PROTECT, 
+        related_name='topicModule_usertopic_related', related_query_name='topicModule_usertopics')
+    reason = models.TextField(max_length=500)
     last_opened = models.DateTimeField(null=True)
-    created_at = models.DateTimeField(default=timezone.now, editable=False) 
-    end= models.DateField(null=True)

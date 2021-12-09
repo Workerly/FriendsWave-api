@@ -1,20 +1,23 @@
 from django.db import models
+
 from social.models import Profil
-from django.utils import timezone
+from FriendsWave.utils import Datation
+
 # Create your models here.
 
-""" 
-model Notification 
-"""
-class Notification(models.Model):
-    receiver = models.ForeignKey(Profil, on_delete=models.CASCADE, related_name='social_notification_related', related_query_name='social_notifications')
+
+class Notification(Datation):
+    """ 
+    model Notification 
+    """
+    receiver = models.ForeignKey(Profil, on_delete=models.PROTECT, 
+        related_name='social_notification_related', 
+        related_query_name='social_notifications')
     title = models.CharField(max_length=50)
     message = models.TextField(max_length=100)
-    created_at = models.DateTimeField(default=timezone.now, editable=False) 
-    update_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering =['created_at']
+        ordering =['created']
     
 
     def __str__(self) -> str:
