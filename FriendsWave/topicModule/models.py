@@ -4,6 +4,9 @@ from django_extensions.db.models import TimeStampedModel
 import uuid
 
 class Datation(TimeStampedModel):
+    """
+        This class content a timestamp reprensenting when the object was created and was last updated.
+    """
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     deleted = models.BooleanField(default=False)
@@ -11,12 +14,12 @@ class Datation(TimeStampedModel):
 
 class Topic(Datation):
     """ 
-    model Topic 
+        This have the information about a topic 
     """
     profil = models.ForeignKey('social.Profil', on_delete=models.PROTECT, 
-        related_name='social_topic_related', related_query_name='social_topics')
-    title = models.TextField(max_length=100)
-    description = models.TextField(max_length=100)
+        related_name='social_topic_related', related_query_name='social_topics')   # the profil can suscribe to topic
+    title = models.TextField(max_length=100)    # the title of topic
+    description = models.TextField(max_length=100) # his description
 
     class Meta:
         ordering = ['created', 'title']
@@ -31,11 +34,10 @@ class Topic(Datation):
 
 class ProfilTopic(Datation):
     """ 
-    model User_Topic 
+        This model have all informations about the suscriber to a topic
     """
     suscriber = models.ForeignKey('social.Profil', on_delete=models.PROTECT, 
-        related_name='social_usertopic_related', related_query_name='social_usertopics')
+        related_name='social_usertopic_related', related_query_name='social_usertopics')  # the suscriber 
     topics = models.ForeignKey(Topic, on_delete=models.PROTECT, 
-        related_name='topicModule_usertopic_related', related_query_name='topicModule_usertopics')
-    reason = models.TextField(max_length=500)
-    last_opened = models.DateTimeField(null=True)
+        related_name='topicModule_usertopic_related', related_query_name='topicModule_usertopics')  # topic suscribe
+    reason = models.TextField(max_length=500) # if the profil stop to follow a topic

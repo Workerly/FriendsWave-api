@@ -6,6 +6,9 @@ from social.models import Profil
 import uuid
 
 class Datation(TimeStampedModel):
+    """
+        This class content a timestamp reprensenting when the object was created and was last updated.
+    """
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False)
     deleted = models.BooleanField(default=False)
@@ -15,7 +18,7 @@ class Datation(TimeStampedModel):
 
 class Community(Datation):
     """ 
-    model Group 
+        This model have the information about a community (members, visibility)
     """
 
     VISIBILITY = (
@@ -25,11 +28,11 @@ class Community(Datation):
     
     members = models.ManyToManyField(Profil, through='Member', 
         related_name='social_group_related', 
-        related_query_name='social_groups')
-    name = models.CharField(max_length=100)
-    description = models.TextField(max_length=100)
-    visibilty = models.CharField(max_length=100, choices=VISIBILITY)
-    link = models.CharField(max_length=100, null=True)
+        related_query_name='social_groups')   # Each profil can be belong a community
+    name = models.CharField(max_length=100)  # designation of community
+    description = models.TextField(max_length=100)  # His description
+    visibilty = models.CharField(max_length=100, choices=VISIBILITY)  # A community can be public or private
+    link = models.CharField(max_length=100, null=True)  # Link of community
 
     class Meta:
         ordering = ['created', 'name']
@@ -44,16 +47,16 @@ class Community(Datation):
 
 class Member(Datation):
     """ 
-    model Member 
+    This model have all the profil belong a community 
     """
     group = models.ForeignKey(Community, on_delete=models.PROTECT, 
         related_name='groupModule_member_related', 
-        related_query_name='groupModule_members')
+        related_query_name='groupModule_members')  # community of member
     profil = models.ForeignKey(Profil, on_delete=models.PROTECT, 
         related_name='social_member_related', 
-        related_query_name='social_members')
-    is_admin = models.BooleanField(default=False)
-    is_owner = models.BooleanField(default=False)
+        related_query_name='social_members') # profil of member
+    is_admin = models.BooleanField(default=False)  # the profil can be admin or not
+    is_owner = models.BooleanField(default=False)   # the profil can be owner of a community
 
     class Meta:
         ordering = ['created', 'is_admin', 'is_owner']

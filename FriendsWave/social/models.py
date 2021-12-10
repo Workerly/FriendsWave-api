@@ -7,6 +7,7 @@ from topicModule.models import Topic
 from rest_framework_simplejwt.tokens import RefreshToken
 
 import uuid
+from django.utils import timezone
 
 class Datation(TimeStampedModel):
     """
@@ -19,7 +20,7 @@ class Datation(TimeStampedModel):
 
 
 
-class User(AbstractUser, Datation):
+class User(AbstractUser):
     """
         model user extend default user django
     it content all informations about user of our system 
@@ -30,21 +31,19 @@ class User(AbstractUser, Datation):
         ('M', 'Masculin'),
         ('F', 'Feminin')
     )
-
     
-    first_name = models.CharField(max_length=100) # Each User can have a first name This field content this data          
-    last_npassame = models.CharField(max_length=100)  # Each User can have a last name Thisfield content this data       
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     birth_date = models.DateField(null=True, blank=True) # Each User have a birth day This field content this data   
     genre = models.CharField(max_length=1, choices=GENRE) # Every human being is either male or female This field content this data   
     phone_number = models.CharField(max_length=200)  # This field content the phone number of a user
     address = models.CharField(max_length=200, blank=True)    # Every human lives in a locality this content this data
-    email = models.EmailField(db_index=True, max_length=254, unique=True)  # We used an email address for contacting the user anyways and authenticate user
-    username = models.CharField(db_index=True, max_length=200, unique=True)     # Each User needs a human-readable unique identifier that we can use to represent the `User` in the UI.
-    is_active = models.BooleanField(default=True) # We will simply offer users a way to deactivate their account instead of letting them delete it
     is_verified = models.BooleanField(default=False)     # When a user has just created an account, he receives a confirmation email.
+    updated_at = models.DateField(default=timezone.now)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['created', 'genre']
+        ordering = ['genre']
         verbose_name = "user"
         verbose_name_plural = "users"
 

@@ -12,23 +12,20 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 import datetime
 
 
-"""
-Serialiazer friend 
-"""
 class FriendSerializers(serializers.ModelSerializer):
-    
+    """
+    Serialiazer friend 
+    """    
     class Meta:
         model = Friend
         fields = []
 
 
-
-"""
-Serializer Profil
-"""
 class ProfilSerializers(serializers.ModelSerializer):
     
-
+    """
+    Serializer Profil
+    """
     class Meta:
         model = Profil
         fields = ['id', 'pseudo', 'avatar']
@@ -38,17 +35,27 @@ class ProfilSerializers(serializers.ModelSerializer):
     def validate(self, attrs):
         return super().validate(attrs)
 
-
-
-
-"""
-Serializer User Registration with profil
-"""
 class RegisterSerializers(serializers.ModelSerializer):
-    
+    """
+    Serializer User Registration with profil
+    """
+    password = serializers.CharField(style={'input_type': 'password'}, write_only=True, max_length=68, min_length=6)
+
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'birth_date', 'genre','phone_number', 'address', 'email', 'username', 'password']
+        fields = [
+            'id', 
+            'first_name', 
+            'last_name', 
+            'birth_date', 
+            'genre',
+            'phone_number', 
+            'address', 
+            'is_active',
+            'email', 
+            'username', 
+            'password',
+        ]
     
     def validate(self, attrs):
         if attrs['birth_date'] > datetime.date.today():
@@ -68,8 +75,8 @@ class RegisterSerializers(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         Profil.objects.create(user=user, **profile_data)
         return user
-    """
-    """
+    
+    
     methode to update user with profil
     
     def update(self, instance, validated_data):
@@ -101,25 +108,22 @@ class RegisterSerializers(serializers.ModelSerializer):
         return instance
         """
 
+class LoginSerializer(serializers.ModelSerializer):    
 
-"""
-Serializer authenticate user
-"""
-class LoginSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=255, min_length=5)
-    password = serializers.CharField(max_length=68, min_length=6, write_only=True)
+    username = serializers.CharField(max_length=255, min_length=5)
+    password = serializers.CharField(style={'input_type': 'password'}, max_length=68, min_length=6, write_only=True)
     
-    tokens = serializers.CharField(read_only=True)
+    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'tokens']
+        fields = ['username', 'password', 'token']
 
     def validate(self, data):
-        email = data.get('email', '')
+        username = data.get('username', '')
         password = data.get('password', '')
         
-        user = auth.authenticate(email=email, password=password)
+        user = auth.authenticate(username=username, password=password)
 
         if not user:
             raise AuthenticationFailed('Invalide crusedentials, try again')

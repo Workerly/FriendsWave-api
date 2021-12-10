@@ -7,12 +7,18 @@ from social.serializers import ProfilSerializers
 """
 Serializer topic
 """
-class SerializersTopic(serializers.ModelSerializer):
+class TopicSerializer(serializers.ModelSerializer):
     profil =  ProfilSerializers(many=True, read_only=True)
 
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'designation', 'created_at', 'profil']
+        fields = [
+            'id', 
+            'title', 
+            'designation', 
+            'created_at', 
+            'profil'
+        ]
 
 
 

@@ -21,9 +21,13 @@ class Content(Datation):
     An abstract model that represent the content such as post or comment   
     """
     profil = models.ForeignKey(Profil, on_delete=models.PROTECT, related_name="social_content_related",
-        related_query_name='social_contents')
-    content = models.TextField(max_length=1000)
-    media = models.FileField(upload_to='static/content/%Y/%m/%d/', null=True, blank=True)
+        related_query_name='social_contents') # Each profil can create the content 
+    likes = models.ManyToManyField(Profil, through='postModule.Like', 
+        related_name='social_likes_related', related_query_name='socials_likecontents')  # The profil can like content
+    content = models.TextField(max_length=1000) # the object or message
+    media = models.FileField(upload_to='static/content/%Y/%m/%d/', null=True, blank=True) # The media that illustrate the content
+    numbers_likes = models.PositiveBigIntegerField()    # this field contains number of likes of a content
+    numbers_dislikes = models.PositiveBigIntegerField()  # this field contains number of dislikes of a content
 
     class Meta:
         ordering = ['created']
@@ -38,14 +42,13 @@ class Content(Datation):
 
 class Post(Content):
     """ 
-    model Post 
+        This model post concern all publication 
     """
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, 
-        related_name='topicModule_post_related', related_query_name='topicModule_posts')
+    topic = models.ForeignKey(Topic, on_delete=models.PROTECT, 
+        related_name='topicModule_post_related', related_query_name='topicModule_posts') # A post concern a topic
     shares = models.ManyToManyField(Profil, through='postModule.Share', 
-        related_name='social_post_related', related_query_name='social_posts')
-    likes = models.ManyToManyField(Profil, through='postModule.Like', 
-        related_name='social_likes_related', related_query_name='socials_likecontents')
+        related_name='social_post_related', related_query_name='social_posts')  # The profil can share post
+    number_shares = models.PositiveBigIntegerField()       # this field contains the number shares of a post
 
 
     class Meta(Content.Meta):
@@ -56,20 +59,20 @@ class Post(Content):
 
 class Like(Datation):
     """ 
-    model Like 
+        This mdel content all informations about likes of a content
     """
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE, 
-        related_name='social_like_related', related_query_name='social_likes')
-    content = models.ForeignKey(Post, on_delete=models.CASCADE, 
-        related_name='postModule_like_related', related_query_name='postModule_likes')
+    profil = models.ForeignKey(Profil, on_delete=models.PROTECT, 
+        related_name='social_like_related', related_query_name='social_likes') # profil like post
+    content = models.ForeignKey(Post, on_delete=models.PROTECT, 
+        related_name='postModule_like_related', related_query_name='postModule_likes') # A content can be liking
 
 
 
 class Share(Datation):
     """
-    model share
+        This model content all informations about shares of a post
     """
-    profil = models.ForeignKey(Profil, on_delete=models.CASCADE, 
-        related_name='social_share_related', related_query_name='social_shares')
-    content = models.ForeignKey(Post, on_delete=models.CASCADE, 
-        related_name='postModule_share_related', related_query_name='postModule_shares')
+    profil = models.ForeignKey(Profil, on_delete=models.PROTECT, 
+        related_name='social_share_related', related_query_name='social_shares') # Profil can share post
+    content = models.ForeignKey(Post, on_delete=models.PROTECT, 
+        related_name='postModule_share_related', related_query_name='postModule_shares') # A content can be sharing with other
